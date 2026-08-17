@@ -27,5 +27,6 @@ jobs:
               -f name="$name" -f color="$color" -f description="$description" >/dev/null 2>&1 || true
           }
           create_label "approved-to-publish" "0E8A16" "Owner-approved Instagram publishing trigger"
+          create_label "validated" "8250DF" "Dry-run validation completed; nothing was published"
           create_label "published" "1D76DB" "Successfully published to Instagram"
           create_label "publish-failed" "D93F0B" "Instagram publishing needs attention"
