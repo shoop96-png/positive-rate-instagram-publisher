@@ -218,7 +218,7 @@ def meta_request(url: str, token: str, data: dict[str, str] | None = None) -> di
         raise PublisherError(f"Meta API request failed: {exc}") from exc
 
 
-def publish(post: ApprovedPost) -> tuple[str, str | None]:
+def meta_configuration() -> tuple[str, str, str, str]:
     user_id = os.environ.get("INSTAGRAM_USER_ID", "").strip()
     token = os.environ.get("INSTAGRAM_ACCESS_TOKEN", "").strip()
     version = os.environ.get("META_API_VERSION", "").strip()
@@ -226,8 +226,23 @@ def publish(post: ApprovedPost) -> tuple[str, str | None]:
         raise PublisherError("Instagram repository credentials are not configured")
     if not API_VERSION_RE.fullmatch(version):
         raise PublisherError("META_API_VERSION must look like vXX.X")
+    return user_id, token, version, f"https://graph.instagram.com/{version}"
 
-    base = f"https://graph.instagram.com/{version}"
+
+def validate_meta_credentials() -> str:
+    user_id, token, _version, base = meta_configuration()
+    details = meta_request(f"{base}/me?fields=id,username,account_type", token)
+    returned_id = str(details.get("id", ""))
+    if returned_id != user_id:
+        raise PublisherError("Configured Instagram user ID does not match the access token")
+    username = details.get("username")
+    if not isinstance(username, str) or not username:
+        raise PublisherError("Meta token validation did not return an Instagram username")
+    return username
+
+
+def publish(post: ApprovedPost) -> tuple[str, str | None]:
+    user_id, token, _version, base = meta_configuration()
     container = meta_request(
         f"{base}/{urllib.parse.quote(user_id, safe='')}/media",
         token,
@@ -291,7 +306,9 @@ def main() -> int:
         )
         write_output("approval_id", post.approval_id)
         if post.dry_run:
-            print("Dry run complete. Nothing was published.")
+            username = validate_meta_credentials()
+            print(f"Meta credentials verified for @{username}.")
+            print("Dry run complete. Nothing was published to Instagram.")
             write_output("published", "false")
             return 0
         media_id, permalink = publish(post)
