@@ -1,7 +1,9 @@
 import json
+import os
 import unittest
+from unittest.mock import patch
 
-from scripts.publish_instagram import PublisherError, load_approved_post
+from scripts.publish_instagram import PublisherError, load_approved_post, validate_meta_credentials
 
 
 def payload(**overrides):
@@ -39,6 +41,31 @@ class ApprovedPostTests(unittest.TestCase):
     def test_rejects_overlong_final_caption(self):
         with self.assertRaises(PublisherError):
             load_approved_post(payload(caption="x" * 2_200))
+
+
+class MetaCredentialTests(unittest.TestCase):
+    @patch.dict(
+        os.environ,
+        {
+            "INSTAGRAM_USER_ID": "17841433916203856",
+            "INSTAGRAM_ACCESS_TOKEN": "test-token",
+            "META_API_VERSION": "v26.0",
+        },
+        clear=True,
+    )
+    @patch("scripts.publish_instagram.meta_request")
+    def test_uses_instagram_login_user_id(self, meta_request):
+        meta_request.return_value = {
+            "id": "app-scoped-id",
+            "user_id": "17841433916203856",
+            "username": "positiverateaviationstories",
+            "account_type": "BUSINESS",
+        }
+
+        username = validate_meta_credentials()
+
+        self.assertEqual(username, "positiverateaviationstories")
+        self.assertIn("fields=user_id,username,account_type", meta_request.call_args.args[0])
 
 
 if __name__ == "__main__":
