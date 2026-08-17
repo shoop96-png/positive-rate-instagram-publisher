@@ -231,9 +231,11 @@ def meta_configuration() -> tuple[str, str, str, str]:
 
 def validate_meta_credentials() -> str:
     user_id, token, _version, base = meta_configuration()
-    details = meta_request(f"{base}/me?fields=id,username,account_type", token)
-    returned_id = str(details.get("id", ""))
-    if returned_id != user_id:
+    details = meta_request(f"{base}/me?fields=user_id,username,account_type", token)
+    returned_user_id = str(details.get("user_id", ""))
+    if not returned_user_id:
+        raise PublisherError("Meta token validation did not return an Instagram publishing user ID")
+    if returned_user_id != user_id:
         raise PublisherError("Configured Instagram user ID does not match the access token")
     username = details.get("username")
     if not isinstance(username, str) or not username:
