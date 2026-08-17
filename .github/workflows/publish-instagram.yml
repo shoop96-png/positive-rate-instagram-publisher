@@ -1,0 +1,46 @@
+name: Publish approved Instagram post
+
+on:
+  issues:
+    types: [labeled]
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: positive-rate-instagram-publisher
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: >-
+      github.event.label.name == 'approved-to-publish' &&
+      github.event.issue.user.login == github.repository_owner
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      APPROVAL_PAYLOAD: ${{ github.event.issue.body }}
+      INSTAGRAM_USER_ID: ${{ vars.INSTAGRAM_USER_ID }}
+      META_API_VERSION: ${{ vars.META_API_VERSION }}
+      INSTAGRAM_ACCESS_TOKEN: ${{ secrets.INSTAGRAM_ACCESS_TOKEN }}
+      ISSUE_NUMBER: ${{ github.event.issue.number }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Check out publisher
+        uses: actions/checkout@v4
+
+      - name: Validate and publish
+        id: publisher
+        run: python3 scripts/publish_instagram.py
+
+      - name: Mark successful approval
+        if: success()
+        run: |
+          gh issue edit "$ISSUE_NUMBER" --remove-label "approved-to-publish" --add-label "published"
+          gh issue close "$ISSUE_NUMBER" --reason completed
+
+      - name: Mark failed approval
+        if: failure()
+        run: |
+          gh issue edit "$ISSUE_NUMBER" --remove-label "approved-to-publish" --add-label "publish-failed" || true
