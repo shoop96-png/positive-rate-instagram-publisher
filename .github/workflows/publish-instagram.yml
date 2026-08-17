@@ -34,10 +34,16 @@ jobs:
         id: publisher
         run: python3 scripts/publish_instagram.py
 
-      - name: Mark successful approval
-        if: success()
+      - name: Mark successful publication
+        if: success() && steps.publisher.outputs.published == 'true'
         run: |
           gh issue edit "$ISSUE_NUMBER" --remove-label "approved-to-publish" --add-label "published"
+          gh issue close "$ISSUE_NUMBER" --reason completed
+
+      - name: Mark successful dry run
+        if: success() && steps.publisher.outputs.published == 'false'
+        run: |
+          gh issue edit "$ISSUE_NUMBER" --remove-label "approved-to-publish" --add-label "validated"
           gh issue close "$ISSUE_NUMBER" --reason completed
 
       - name: Mark failed approval
