@@ -1,0 +1,31 @@
+name: Configure publisher labels
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/configure-labels.yml
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  labels:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create workflow labels
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          create_label() {
+            local name="$1"
+            local color="$2"
+            local description="$3"
+            gh api --method POST "repos/${REPOSITORY}/labels" \
+              -f name="$name" -f color="$color" -f description="$description" >/dev/null 2>&1 || true
+          }
+          create_label "approved-to-publish" "0E8A16" "Owner-approved Instagram publishing trigger"
+          create_label "published" "1D76DB" "Successfully published to Instagram"
+          create_label "publish-failed" "D93F0B" "Instagram publishing needs attention"
