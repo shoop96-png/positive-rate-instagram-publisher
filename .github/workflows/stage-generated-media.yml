@@ -1,0 +1,35 @@
+name: Stage generated media
+
+on:
+  push:
+    paths:
+      - 'staging/*.b64'
+
+permissions:
+  contents: write
+
+jobs:
+  decode:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Decode staged JPEG files
+        shell: bash
+        run: |
+          mkdir -p media
+          shopt -s nullglob
+          for src in staging/*.b64; do
+            name="$(basename "$src" .b64)"
+            base64 --decode "$src" > "media/$name"
+            rm "$src"
+          done
+      - name: Commit media
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A media staging
+          if ! git diff --cached --quiet; then
+            git commit -m "Stage generated Instagram media [skip ci]"
+            git push
+          fi
