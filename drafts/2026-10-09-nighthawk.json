@@ -1,0 +1,14 @@
+{
+  "status": "awaiting_approval",
+  "headline": "STEALTH ICON. NEW MISSION.",
+  "publish_payload": {
+    "schema": 1,
+    "approval_id": "wade-2026-10-09-positive-rate-nighthawk",
+    "caption": "Even a stealth icon needs a lift sometimes. ✈️\n\nAn F-117A Nighthawk nicknamed “The Overachiever” has made the cross-country trip to the Smithsonian’s Steven F. Udvar-Hazy Center—inside a C-5M Super Galaxy.\n\nAir Force Reserve crews moved the historic aircraft from Palmdale, California, to Virginia. Its wings were detached for transport, and loading required careful weight distribution and extremely tight clearances.\n\nWhen additional tie-down points were needed, a Skunk Works mechanical team worked overnight to prepare the fuselage for the journey.\n\nNow the Nighthawk has a new mission: helping visitors discover the engineering behind the world’s first operational stealth combat aircraft. It will be reassembled in the Mary Baker Engen Restoration Hangar before display.\n\nA remarkable airplane, preserved by people who know how to move the seemingly impossible. 💙\n\nThe artwork is an editorial illustration; the aircraft was transported as cargo, not flown under its own power.\n\nSources: Air Force Reserve report, October 8, 2026, syndicated by EIN Presswire; The Aviationist, October 9, 2026.\nhttps://military.einnews.com/pr_news/948297315/legendary-fighter-takes-final-flight-air-force-reserve-delivers-f-117a-to-smithsonian\nhttps://theaviationist.com/2026/10/09/f-117-the-overachiever/\n\n#AviationHistory #F117 #Nighthawk #AirAndSpaceMuseum #AviationPreservation #C5Galaxy #AvGeek #PositiveRate",
+    "credit_line": "Original editorial illustration: Positive Rate Aviation Stories. Illustrative artwork, not a photograph of the aircraft or transport.",
+    "image_url": "https://raw.githubusercontent.com/shoop96-png/positive-rate-instagram-publisher/main/media/2026-10-09-positive-rate-nighthawk.jpg",
+    "source_url": "https://theaviationist.com/2026/10/09/f-117-the-overachiever/",
+    "dry_run": false
+  },
+  "reuse_basis": "Original editorial illustration created with built-in image generation, no third-party image inputs."
+}
